@@ -37,13 +37,14 @@ test('unreliable low pH cannot directly trigger pH high risk',()=>assert.equal(e
 test('unknown pH quality cannot directly trigger pH high risk',()=>assert.equal(e({infection:'yes',ph:7.1}).infection.level,'warning'));
 test('low pH without infection does not auto mandate drainage',()=>assert.equal(e({infection:'no',ph:7.1,phReliable:'yes'}).infection.level,'warning'));
 test('missing pH plus very low glucose supports high risk',()=>assert.equal(e({infection:'yes',pg:40}).infection.level,'danger'));
-test('glucose threshold exactly 3.3 is not below',()=>assert.equal(e({infection:'yes',pg:3.3,glucoseUnit:'mmol/L'}).infection.level,'warning'));
+test('glucose exactly 60 mg/dL is not below',()=>assert.equal(e({infection:'yes',pg:60}).infection.level,'warning'));
+test('glucose 59.9 mg/dL is below',()=>assert.equal(e({infection:'yes',pg:59.9}).infection.level,'danger'));
 test('glucose units equivalent',()=>assert.equal(e({infection:'yes',pg:3,glucoseUnit:'mmol/L'}).infection.level,e({infection:'yes',pg:54}).infection.level));
 test('LDH 900 is not above intermediate threshold',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:900,pg:50}).infection.text.startsWith('LDH 與 glucose 未同時')));
 test('LDH 901 without glucose asks for glucose',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:901}).infection.text.includes('請補驗胸水 glucose')));
-test('BTS intermediate: LDH >900 and glucose <=4 mmol/L considers drain',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:901,pg:72}).infection.text.includes('符合 BTS')));
-test('BTS intermediate: glucose exactly 4 mmol/L counts',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:1000,pg:4,glucoseUnit:'mmol/L'}).infection.text.includes('符合 BTS')));
-test('BTS intermediate: high LDH with glucose >4 mmol/L does not meet both',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:1500,pg:73}).infection.text.startsWith('LDH 與 glucose 未同時')));
+test('BTS intermediate: LDH >900 and glucose <=72 mg/dL considers drain',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:901,pg:72}).infection.text.includes('符合 BTS')));
+test('BTS intermediate: glucose exactly 72 mg/dL counts',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:1000,pg:72}).infection.text.includes('符合 BTS')));
+test('BTS intermediate: high LDH with glucose >72 mg/dL does not meet both',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:1500,pg:73}).infection.text.startsWith('LDH 與 glucose 未同時')));
 test('BTS intermediate: missing LDH and glucose asks for both',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes'}).infection.text.startsWith('請補驗胸水 LDH')));
 test('transudate with cirrhosis only does not add heart failure card',()=>assert.ok(!e({...base,cirrhosis:true}).ddx.some(x=>x.title.startsWith('心衰竭'))));
 test('transudate with PD only does not add heart failure card',()=>assert.ok(!e({...base,pd:true,ckd:true}).ddx.some(x=>x.title.startsWith('心衰竭'))));

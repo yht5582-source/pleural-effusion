@@ -44,14 +44,14 @@
       if(d.ph<=7.2){infection={level:'danger',title:'高風險感染性胸水｜pH ≤7.20',text:'超音波確認有足夠、可安全到達的胸水時，應安排引流評估，並治療感染。[1]'};urgent.push(infection.title+'：優先安排安全引流評估。');}
       else if(d.ph<7.4){
         const ldhHigh=d.pl!==null&&gt(d.pl,900),gluLow=d.pg!==null&&!gt(d.pg,72);
-        const text=ldhHigh&&gluLow?'LDH >900 U/L 且 glucose ≤4 mmol/L（≤72 mg/dL）：符合 BTS 考慮放置引流的條件，超音波見分隔時更應考慮。[1]'
-          :ldhHigh&&d.pg===null?'LDH >900 U/L：請補驗胸水 glucose；BTS 以 LDH >900 U/L 且 glucose ≤4 mmol/L（≤72 mg/dL）作為考慮引流的條件。[1]'
-          :d.pl===null||d.pg===null?'請補驗胸水 LDH 與 glucose；LDH >900 U/L 且 glucose ≤4 mmol/L（≤72 mg/dL）時考慮引流。[1]'
+        const text=ldhHigh&&gluLow?'LDH >900 U/L 且 glucose ≤72 mg/dL：符合 BTS 考慮放置引流的條件，超音波見分隔時更應考慮。[1]'
+          :ldhHigh&&d.pg===null?'LDH >900 U/L：請補驗胸水 glucose；BTS 以 LDH >900 U/L 且 glucose ≤72 mg/dL作為考慮引流的條件。[1]'
+          :d.pl===null||d.pg===null?'請補驗胸水 LDH 與 glucose；LDH >900 U/L 且 glucose ≤72 mg/dL時考慮引流。[1]'
           :'LDH 與 glucose 未同時達 BTS 考慮引流的條件；仍須結合分隔、胸水量與臨床病程，惡化時重新評估。[1]';
         infection={level:'warning',title:'中度風險｜7.20 < pH < 7.40',text};}
       else infection={level:'info',title:'pH 分層為低風險｜pH ≥7.40',text:'僅依此 pH 暫無立即引流指徵；持續臨床追蹤，惡化或分隔時重新評估，並不排除感染。[1]'};
     } else if(suspected){
-      if(valid&&d.pg!==null&&gt(59.4,d.pg)) {infection={level:'danger',title:'缺乏可靠 pH，glucose <3.3 mmol/L',text:'約 <59.4 mg/dL，支持感染高風險，須結合情境評估引流；低糖亦可見於 RA 或惡性疾病。[1]'};urgent.push('疑似感染且缺乏可靠 pH，胸水低糖：優先評估。');}
+      if(valid&&d.pg!==null&&gt(60,d.pg)) {infection={level:'danger',title:'缺乏可靠 pH，glucose <60 mg/dL',text:'支持感染高風險，須結合情境評估引流；低糖亦可見於 RA 或惡性疾病。[1]'};urgent.push('疑似感染且缺乏可靠 pH，胸水低糖：優先評估。');}
       else infection={level:'warning',title:'疑似感染｜需要可靠的即時 pH',text:'以血氣方式迅速檢測，避免局部麻醉劑、液態 heparin 或空氣污染；目前不能完成 pH 分層。[1]'};
     } else if(usablePH&&d.ph<=7.2)infection={level:'warning',title:'低 pH，但感染情境未成立',text:'重新評估感染，並考慮 RA、惡性疾病及採檢誤差；不能只因低 pH 自動套用感染引流規則。[1]'};
     if(d.loculated)warnings.push('影像見分隔／包裹：需胸腔專科與超音波評估；單一位置的 pH 未必代表全部胸水。');
