@@ -42,10 +42,16 @@
     if(d.pus==='yes'||d.culture==='yes')infection={level:'danger',title:'優先處理胸膜腔感染',text:'膿液或可信的陽性微生物結果優先於生化分層，請評估抗菌治療與安全引流。[1]'};
     else if(suspected&&usablePH){
       if(d.ph<=7.2){infection={level:'danger',title:'高風險感染性胸水｜pH ≤7.20',text:'超音波確認有足夠、可安全到達的胸水時，應安排引流評估，並治療感染。[1]'};urgent.push(infection.title+'：優先安排安全引流評估。');}
-      else if(d.ph<7.4){infection={level:'warning',title:'中度風險｜7.20 < pH < 7.40',text:d.pl>900?'LDH >900 U/L：考慮引流，尤其合併持續發燒、低 glucose、量大或分隔時。[1]':'請結合 LDH（>900 U/L）、影像分隔、胸水量與持續發燒評估；不可只憑 pH 排除需引流。[1]'};}
+      else if(d.ph<7.4){
+        const ldhHigh=d.pl!==null&&gt(d.pl,900),gluLow=d.pg!==null&&!gt(d.pg,72);
+        const text=ldhHigh&&gluLow?'LDH >900 U/L 且 glucose ≤4 mmol/L（≤72 mg/dL）：符合 BTS 考慮放置引流的條件，超音波見分隔時更應考慮。[1]'
+          :ldhHigh&&d.pg===null?'LDH >900 U/L：請補驗胸水 glucose；BTS 以 LDH >900 U/L 且 glucose ≤4 mmol/L（≤72 mg/dL）作為考慮引流的條件。[1]'
+          :d.pl===null||d.pg===null?'請補驗胸水 LDH 與 glucose；LDH >900 U/L 且 glucose ≤4 mmol/L（≤72 mg/dL）時考慮引流。[1]'
+          :'LDH 與 glucose 未同時達 BTS 考慮引流的條件；仍須結合分隔、胸水量與臨床病程，惡化時重新評估。[1]';
+        infection={level:'warning',title:'中度風險｜7.20 < pH < 7.40',text};}
       else infection={level:'info',title:'pH 分層為低風險｜pH ≥7.40',text:'僅依此 pH 暫無立即引流指徵；持續臨床追蹤，惡化或分隔時重新評估，並不排除感染。[1]'};
     } else if(suspected){
-      if(valid&&d.pg!==null&&d.pg<59.4) {infection={level:'danger',title:'缺乏可靠 pH，glucose <3.3 mmol/L',text:'約 <59.4 mg/dL，支持感染高風險，須結合情境評估引流；低糖亦可見於 RA 或惡性疾病。[1]'};urgent.push('疑似感染且缺乏可靠 pH，胸水低糖：優先評估。');}
+      if(valid&&d.pg!==null&&gt(59.4,d.pg)) {infection={level:'danger',title:'缺乏可靠 pH，glucose <3.3 mmol/L',text:'約 <59.4 mg/dL，支持感染高風險，須結合情境評估引流；低糖亦可見於 RA 或惡性疾病。[1]'};urgent.push('疑似感染且缺乏可靠 pH，胸水低糖：優先評估。');}
       else infection={level:'warning',title:'疑似感染｜需要可靠的即時 pH',text:'以血氣方式迅速檢測，避免局部麻醉劑、液態 heparin 或空氣污染；目前不能完成 pH 分層。[1]'};
     } else if(usablePH&&d.ph<=7.2)infection={level:'warning',title:'低 pH，但感染情境未成立',text:'重新評估感染，並考慮 RA、惡性疾病及採檢誤差；不能只因低 pH 自動套用感染引流規則。[1]'};
     if(d.loculated)warnings.push('影像見分隔／包裹：需胸腔專科與超音波評估；單一位置的 pH 未必代表全部胸水。');
@@ -54,7 +60,8 @@
     const triple=!valid?'invalid':triValues.some((v,i)=>v!==null&&gt(v,triCuts[i]))?'exudate':triValues.every(v=>v!==null)?'transudate':'incomplete';
     const ddx=[];
     const add=(title,why,next,ref)=>ddx.push({title,why,next,ref});
-    if(d.hf||d.overload||light==='transudate'||pseudo)add('心衰竭／容量過多',pseudo?'臨床背景與梯度支持可能 pseudoexudate。':'有心衰竭／容量線索，或生化為漏出液。','評估容量、心臟超音波、血清 NT-proBNP 與利尿／超濾反應；可合併其他病因。','1,2,4,6');
+    const otherTransCause=d.cirrhosis||d.nephrotic||d.pd;
+    if(d.hf||d.overload||pseudo||light==='transudate'&&!otherTransCause)add('心衰竭／容量過多',pseudo?'臨床背景與梯度支持可能 pseudoexudate。':d.hf||d.overload?'有心衰竭／容量過多線索。':'生化為漏出液，且未選擇其他漏出液病因；心衰竭最常見。','評估容量、心臟超音波、血清 NT-proBNP 與利尿／超濾反應；可合併其他病因。','1,2,4,6');
     if(d.cirrhosis)add('肝性胸水','已選擇肝硬化背景。','評估腹水與門脈高壓；即使有漏出液表現，發燒或腹痛仍需排除感染。','2');
     if(d.nephrotic)add('腎病症候群／低膠體滲透壓','已選擇腎病症候群背景。','檢視血清 albumin、蛋白尿與容量；不能將所有胸水都歸因於低白蛋白。','2');
     if(suspected||valid&&d.neut>50)add('肺炎旁胸水／胸膜腔感染',suspected?'有臨床感染線索。':'胸水嗜中性球占比 >50%；並非感染專屬。','依上方感染分層處理；送 Gram stain、培養（含血液培養瓶）與可靠 pH。','1');
@@ -63,7 +70,7 @@
     if(d.autoimmune)add('自體免疫胸膜炎（SLE／RA）','有自體免疫疾病線索。','結合疾病活動度、血清學與感染排除；RA 亦可低 glucose／低 pH。','1,2');
     if(d.pe)add('肺栓塞','有突發胸痛、VTE 風險或不明低氧線索。','依臨床前測機率走肺栓塞診斷流程；胸水分類不能排除 PE，影像選擇需考量腎功能。','2');
     if(d.ckd||d.hd||d.pd){if(light==='exudate')add('尿毒性胸膜炎（排除性診斷）','腎衰竭背景合併滲出液。','先排除感染、結核、惡性疾病、PE 與容量問題，再評估透析充分性及後續反應。','2');}
-    if(d.pd)add('腹膜透析相關胸腹膜交通',valid&&d.pg!==null&&d.sg!==null&&d.pg>d.sg?'胸水 glucose 高於血清，支持透析液漏入可能。':'PD 病人，尤其新出現單側／右側胸水需考慮。','配對測 glucose，檢視透析液與採檢時點；低梯度不能排除。由腎臟／胸腔團隊評估核醫或其他影像確認。','5');
+    if(d.pd)add('腹膜透析相關胸腹膜交通',valid&&d.pg!==null&&d.sg!==null&&d.pg>d.sg?'胸水 glucose 高於血清，支持透析液漏入可能。':'PD 病人，尤其新出現單側／右側胸水需考慮。','配對測 glucose，檢視透析液與採檢時點；低梯度不能排除。同時評估容量過多／心衰竭。由腎臟／胸腔團隊評估核醫或其他影像確認。','5');
     if(d.bloody)add('血性胸水／血胸待排','已選擇肉眼血性。','測胸水與周邊血 hematocrit，檢視外傷、處置、抗凝、惡性病與 PE；疑持續出血時立即評估。','2');
     if(d.milky)add('乳糜／假性乳糜胸水','已選擇乳白外觀；外觀本身不能確診。','測 triglycerides、cholesterol，必要時 chylomicrons；並鑑別膿液。','2');
     if(!ddx.length)add('尚無足夠線索','先填臨床背景與胸水檢驗。','完成分類後仍需找病因；持續不明胸水應轉胸腔專科評估。','1,2');

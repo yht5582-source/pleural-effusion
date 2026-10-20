@@ -1,6 +1,6 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
-const {evaluate:e}=require('../dist/engine.js');
+const {evaluate:e}=require('../engine.js');
 const base={pp:2,sp:6,pl:80,sl:200,ul:240,stability:'stable',pus:'no',paired:'yes'};
 test('empty data stays incomplete',()=>assert.equal(e({}).light,'incomplete'));
 test('all three negative are required for transudate',()=>assert.equal(e(base).light,'transudate'));
@@ -39,8 +39,16 @@ test('low pH without infection does not auto mandate drainage',()=>assert.equal(
 test('missing pH plus very low glucose supports high risk',()=>assert.equal(e({infection:'yes',pg:40}).infection.level,'danger'));
 test('glucose threshold exactly 3.3 is not below',()=>assert.equal(e({infection:'yes',pg:3.3,glucoseUnit:'mmol/L'}).infection.level,'warning'));
 test('glucose units equivalent',()=>assert.equal(e({infection:'yes',pg:3,glucoseUnit:'mmol/L'}).infection.level,e({infection:'yes',pg:54}).infection.level));
-test('LDH 900 is not above intermediate threshold',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:900}).infection.text.startsWith('請結合')));
-test('LDH 901 above intermediate threshold',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:901}).infection.text.startsWith('LDH >900')));
+test('LDH 900 is not above intermediate threshold',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:900,pg:50}).infection.text.startsWith('LDH 與 glucose 未同時')));
+test('LDH 901 without glucose asks for glucose',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:901}).infection.text.includes('請補驗胸水 glucose')));
+test('BTS intermediate: LDH >900 and glucose <=4 mmol/L considers drain',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:901,pg:72}).infection.text.includes('符合 BTS')));
+test('BTS intermediate: glucose exactly 4 mmol/L counts',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:1000,pg:4,glucoseUnit:'mmol/L'}).infection.text.includes('符合 BTS')));
+test('BTS intermediate: high LDH with glucose >4 mmol/L does not meet both',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes',pl:1500,pg:73}).infection.text.startsWith('LDH 與 glucose 未同時')));
+test('BTS intermediate: missing LDH and glucose asks for both',()=>assert.ok(e({infection:'yes',ph:7.3,phReliable:'yes'}).infection.text.startsWith('請補驗胸水 LDH')));
+test('transudate with cirrhosis only does not add heart failure card',()=>assert.ok(!e({...base,cirrhosis:true}).ddx.some(x=>x.title.startsWith('心衰竭'))));
+test('transudate with PD only does not add heart failure card',()=>assert.ok(!e({...base,pd:true,ckd:true}).ddx.some(x=>x.title.startsWith('心衰竭'))));
+test('transudate without context still lists heart failure',()=>assert.ok(e(base).ddx.some(x=>x.title.startsWith('心衰竭'))));
+test('cirrhosis plus HF keeps heart failure card',()=>assert.ok(e({...base,cirrhosis:true,hf:true}).ddx.some(x=>x.title.startsWith('心衰竭'))));
 test('NTproBNP alone never changes Light classification',()=>assert.equal(e({...base,pp:5,nt:20000,ckd:true}).light,'exudate'));
 test('triple has OR logic',()=>assert.equal(e({chol:56}).triple,'exudate'));
 test('triple does not overwrite Light',()=>{const r=e({pp:3.4,pl:120,chol:60});assert.equal(r.light,'incomplete');assert.equal(r.triple,'exudate');});

@@ -18,7 +18,7 @@
 <button type="button" data-step="3"><b>04</b><span>病因鑑別<small>線索與下一步檢查</small></span></button>
 <button type="button" data-step="4"><b>05</b><span>摘要與依據<small>列印・證據更新</small></span></button></nav>
 <div class="sidebar-note"><span class="dot"></span> 資料只在此頁計算<p>不收集識別資料、不上傳檢驗值。重新整理會清空輸入。</p></div>
-<div class="version">v1.0 · 文獻檢視 2026.10.20</div></aside>
+<div class="version">v1.1 · 文獻檢視 2026.10.20</div></aside>
 <main id="main" tabindex="-1">
 <section class="intro"><div class="eyebrow">PLEURAL EFFUSION · DECISION SUPPORT</div><h1>從胸水分類，<br class="mobile-break">走向病因判讀。</h1><p>先辨識急症，再串聯檢驗與臨床線索。分類結果不是病因確診。</p></section>
 <div class="cases"><label for="caseSelect">試用教學病例</label><select id="caseSelect"><option value="">選擇一個虛構病例…</option><option value="hf">01 心衰竭・典型漏出液</option><option value="pseudo">02 利尿後・假性滲出液</option><option value="infection">03 肺炎旁胸水・低 pH</option><option value="malignancy">04 淋巴球優勢・腫瘤線索</option><option value="pd">05 腹膜透析・右側胸水</option><option value="missing">06 缺少配對血液・研究比較</option></select><button type="button" id="loadCase" class="secondary">載入病例</button></div>
@@ -56,6 +56,7 @@
 <aside class="result-column" aria-label="即時判讀"><div class="result-card"><div class="eyebrow">LIVE ASSESSMENT</div><h2>目前判讀</h2><div id="liveStatus" aria-live="polite"></div><div id="miniCriteria"></div><div id="safetyStatus"></div><div class="next-focus"><small>接下來</small><p id="nextFocus"></p></div><button type="button" class="summary-link" id="goSummary">檢視完整摘要 ↗</button></div><div class="legend-card"><b>判讀原則</b><p>任一陽性 → 滲出液<br>三項陰性 → 漏出液<br>資料不足 → 保留未分類</p><small>分型不會排除混合病因。</small></div></aside></div>
 <footer>為臨床思考提供路徑。<span>Light’s criteria · BTS 2023 · ICS/NCCP 2024</span></footer>
 </main></div>
-<dialog id="confirmDialog"><h2 id="dialogTitle">清除目前資料？</h2><p>目前輸入將被清除，且無法復原。</p><div class="actions"><button id="cancelDialog" class="secondary">取消</button><button id="confirmDialogAction" class="primary">確認</button></div></dialog>
+<button type="button" id="liveBar" class="live-bar" aria-label="跳至目前判讀"><span id="liveBarText">資料尚未完整</span><span id="liveBarFlag"></span><span aria-hidden="true">↓</span></button>
+<dialog id="confirmDialog"><h2 id="dialogTitle">清除目前資料？</h2><p>目前輸入將被清除，且無法復原。</p><div class="actions"><button type="button" id="cancelDialog" class="secondary">取消</button><button type="button" id="confirmDialogAction" class="primary">確認</button></div></dialog>
 <noscript><div class="callout danger">此工具需要 JavaScript 才能進行計算與引導，請啟用後重新整理。</div></noscript>
 </body></html>

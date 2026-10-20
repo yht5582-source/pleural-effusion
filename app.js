@@ -56,11 +56,13 @@ function update(){
  $('infectionResult').innerHTML=callout(r.infection.level,r.infection.title,r.infection.text);
  $('differentials').innerHTML=(r.valid?'':callout('warning','檢驗數值尚有錯誤','以下僅保留臨床背景引出的方向，請先修正數值。'))+r.ddx.map(x=>`<article class="ddx-card"><h3>${x.title}</h3><p class="why">${x.why}</p><p>${x.next}</p><small>依據 [${x.ref}]</small></article>`).join('');
  $('summaryText').textContent=summary(r,raw);
+ $('liveBarText').textContent='目前判讀：'+title+(r.pseudo?'（可能假性滲出液）':'');
+ $('liveBarFlag').className=r.urgent.length?'flag':'';$('liveBarFlag').textContent=r.urgent.length?'優先處理 '+r.urgent.length:'';
 }
 function summary(r,raw){
- const [title,en]=classification(r),lines=['成人胸水鑑別評估摘要','工具版本 v1.0｜文獻檢視 2026-10-20',caseLabel?'教學病例（虛構）：'+caseLabel:'個別評估（未輸入識別資料）','',`Light’s criteria：${title} / ${en}`,`可判讀 ${r.known}/3 項，陽性 ${r.positive}/3 項。`];
+ const [title,en]=classification(r),lines=['成人胸水鑑別評估摘要','工具版本 v1.1｜文獻檢視 2026-10-20',caseLabel?'教學病例（虛構）：'+caseLabel:'個別評估（未輸入識別資料）','',`Light’s criteria：${title} / ${en}`,`可判讀 ${r.known}/3 項，陽性 ${r.positive}/3 項。`];
  r.criteria.forEach(c=>lines.push(`• ${c.name}：${num(c.value,4)}；門檻 >${num(c.threshold,4)}；${c.positive===null?'未完成':c.positive?'陽性':'陰性'}`));
- lines.push('','輸入數值：');for(const [k,label]of Object.entries(PleuralEngine.labels)){if(raw[k]!==''&&raw[k]!=null)lines.push(`${label}：${raw[k]} ${['pp','sp','pa','sa'].includes(k)?raw.proteinUnit:['pg','sg'].includes(k)?raw.glucoseUnit:['pl','sl','ul','ada'].includes(k)?'U/L':k==='nt'?'pg/mL':k==='chol'?'mg/dL':['lymph','neut'].includes(k)?'%':''}`);}
+ lines.push('','輸入數值：');for(const [k,label]of Object.entries(PleuralEngine.labels)){if(raw[k]!==''&&raw[k]!=null)lines.push(raw[k]==='invalid'?`${label}：（無效輸入）`:`${label}：${raw[k]} ${['pp','sp','pa','sa'].includes(k)?raw.proteinUnit:['pg','sg'].includes(k)?raw.glucoseUnit:['pl','sl','ul','ada'].includes(k)?'U/L':k==='nt'?'pg/mL':k==='chol'?'mg/dL':['lymph','neut'].includes(k)?'%':''}`);}
  const checked=[...backgrounds,...clues].filter(([k])=>raw[k]).map(([,label])=>label);
  lines.push('','背景／線索：'+(checked.join('、')||'尚未勾選（不代表陰性）'),`穩定度：${{unknown:'未評估',stable:'目前穩定',unstable:'不穩定'}[raw.stability]}`,`膿液：${{unknown:'未評估',yes:'是',no:'否'}[raw.pus]}；感染疑慮：${{unknown:'未評估',yes:'是',no:'目前不懷疑'}[raw.infection]}`,`胸水分布：${{unknown:'未確認',right:'右側',left:'左側',bilateral:'雙側'}[raw.side]}`,`配對採檢：${{unknown:'未確認',yes:'接近同時',no:'不同時'}[raw.paired]}`,`pH 品質：${{unknown:'未確認',yes:'可靠',no:'不可靠／待核對'}[raw.phReliable]}`,'',`SPAG：${num(r.spag,2)} g/dL；protein gradient：${num(r.protGap,2)} g/dL`,r.pseudo?'假性滲出液：臨床背景與梯度支持可能；保留 Light 分類，仍需排除混合病因。':'假性滲出液：未獲本工具支持或不適用，不能據此排除。','',r.infection.title,r.infection.text);
  if(raw.chol!=='')lines.push('',`2026 研究 triple combination：${{invalid:'輸入有誤',incomplete:'資料不足',exudate:'滲出液',transudate:'漏出液'}[r.triple]}（僅研究比較，不能取代 Light）`);
@@ -77,10 +79,10 @@ function loadCase(key){const c=cases[key];if(!c){$('caseNote').hidden=false;$('c
 form.addEventListener('submit',e=>e.preventDefault());
 form.addEventListener('input',e=>{if(['proteinUnit','glucoseUnit'].includes(e.target.id))return;dirty=true;if(caseLabel){$('caseNote').textContent='虛構教學病例（已編輯）｜原始題目：'+caseOriginalNote;}update();});
 form.addEventListener('change',e=>{const id=e.target.id;if(id==='proteinUnit'||id==='glucoseUnit'){const isP=id==='proteinUnit',old=isP?proteinUnit:glucoseUnit,newUnit=e.target.value;const keys=isP?['pp','sp','pa','sa']:['pg','sg'];const factor=isP?(old==='g/dL'?10:.1):(old==='mg/dL'?1/18:18);if(old!==newUnit)for(const k of keys)if($(k).value!=='')$(k).value=Number((Number($(k).value)*factor).toFixed(9));if(isP)proteinUnit=newUnit;else glucoseUnit=newUnit;syncUnits();dirty=true;update();}});
-document.querySelectorAll('[data-step]').forEach(e=>e.addEventListener('click',()=>go(Number(e.dataset.step))));$('prev').onclick=()=>go(step-1);$('next').onclick=()=>go(step+1);$('goSummary').onclick=()=>go(4);
+document.querySelectorAll('[data-step]').forEach(e=>e.addEventListener('click',()=>go(Number(e.dataset.step))));$('prev').onclick=()=>go(step-1);$('next').onclick=()=>go(step+1);$('goSummary').onclick=()=>go(4);$('liveBar').onclick=()=>document.querySelector('.result-card').scrollIntoView({behavior:'smooth',block:'start'});
 $('reset').onclick=()=>confirmAction('清除目前所有輸入？',clear);
 $('loadCase').onclick=()=>{const key=$('caseSelect').value;if(!key){loadCase(key);return;}confirmAction('以教學病例取代目前輸入？',()=>loadCase(key));};
-$('cancelDialog').onclick=()=>{$('confirmDialog').close();pendingAction=null;};$('confirmDialogAction').onclick=()=>{const fn=pendingAction;pendingAction=null;$('confirmDialog').close();fn?.();};
+$('confirmDialog').addEventListener('close',()=>{pendingAction=null;});$('cancelDialog').onclick=()=>{$('confirmDialog').close();pendingAction=null;};$('confirmDialogAction').onclick=()=>{const fn=pendingAction;pendingAction=null;$('confirmDialog').close();fn?.();};
 $('copy').onclick=async()=>{try{await navigator.clipboard.writeText($('summaryText').textContent);$('copyStatus').textContent='已複製摘要。';}catch{const sel=window.getSelection(),range=document.createRange();range.selectNodeContents($('summaryText'));sel.removeAllRanges();sel.addRange(range);$('copyStatus').textContent='瀏覽器未允許直接複製，已選取摘要，請按 Ctrl/Cmd+C。';}};
 $('print').onclick=()=>window.print();$('download').onclick=()=>{const url=URL.createObjectURL(new Blob([$ ('summaryText').textContent],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='pleural-assessment.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
 update();go(0,false);
