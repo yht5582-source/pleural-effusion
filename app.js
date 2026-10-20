@@ -6,7 +6,7 @@ const clues=[['fever','發燒／持續感染徵象'],['loculated','影像分隔�
 const sourceData=[
 ['BTS Guideline for pleural disease · 2023','https://www.brit-thoracic.org.uk/document-library/guidelines/pleural-disease/bts-guideline-for-pleural-disease/','正式指引：感染分層、病因檢查與 NT-proBNP。'],
 ['ICS / NCCP Pleural effusion guidelines · 2024','https://pmc.ncbi.nlm.nih.gov/articles/PMC11093145/','正式指引：Light 分類、albumin／protein gradient 與診斷流程。'],
-['Porcel et al. Revisiting Light’s criteria · 2026','https://pmc.ncbi.nlm.nih.gov/articles/PMC12991015/','診斷研究：7,280 例，血液檢體以外的 triple combination。'],
+['Porcel et al. Revisiting Light’s criteria · ERJ Open Res 2026;12(2):00821-2025','https://pmc.ncbi.nlm.nih.gov/articles/PMC12991015/','診斷研究：7,280 例，只用胸水的 triple combination；驗證組敏感度 98%、特異度 70%。'],
 ['Bielsa et al. Cardiac and hepatic false exudates · 2012','https://doi.org/10.1111/j.1440-1843.2012.02155.x','原始研究：假性滲出液梯度。'],
 ['PD-related hydrothorax: single-center experience · 2021','https://pmc.ncbi.nlm.nih.gov/articles/PMC8722551/','病例系列：胸腹膜交通的診斷線索與影像。'],
 ['Porcel et al. BANCA score · 2025','https://pmc.ncbi.nlm.nih.gov/articles/PMC12208600/','診斷研究：心因性胸水；NT-proBNP 門檻受族群影響，本頁不計算 BANCA。']

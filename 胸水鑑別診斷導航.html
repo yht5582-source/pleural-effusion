@@ -44,7 +44,7 @@
 <div class="lab-header"><span>配對檢驗</span><span>胸水</span><span>血清</span></div><div id="lightLabs"></div>
 <div class="field ul-field"><label for="ul">本院血清 LDH 正常值上限 <span class="unit">U/L</span></label><input id="ul" name="ul" type="number" inputmode="decimal" min="0" step="any" placeholder="請依本院報告填寫"><small>使用檢驗室正常上限，不是病人當次 LDH，也不預設為 250。</small></div>
 <div id="lightDetail"></div>
-<details class="research"><summary>研究比較：2026 年 triple combination</summary><p>僅供比較，尚未取代第一線 Light’s criteria。研究門檻：胸水 protein >3 g/dL、LDH >250 U/L 或 cholesterol >55 mg/dL，任一成立即為滲出液。[3]</p><div class="field"><label for="chol">胸水 cholesterol <span class="unit">mg/dL</span></label><input id="chol" name="chol" type="number" inputmode="decimal" min="0" step="any" placeholder="選填"></div><div id="tripleResult" class="callout"></div><small>7,280 例、單中心回溯資料；研究中心 LDH ULN＝378 U/L。驗證組敏感度均約 98%，仍需外部驗證；不可用研究結果覆蓋 Light 分類。</small></details>
+<details class="research"><summary>研究比較：2026 年 triple combination</summary><p>僅供比較，尚未取代第一線 Light’s criteria。研究門檻：胸水 protein >3 g/dL、LDH >250 U/L 或 cholesterol >55 mg/dL，任一成立即為滲出液。[3]</p><div class="field"><label for="chol">胸水 cholesterol <span class="unit">mg/dL</span></label><input id="chol" name="chol" type="number" inputmode="decimal" min="0" step="any" placeholder="選填"></div><div id="tripleResult" class="callout"></div><small>7,280 例、單中心回溯資料（1994–2025）；研究中心 LDH ULN＝378 U/L，250 U/L 約為其 2/3。驗證組敏感度 98%、特異度 70%（同組 Light 為 98%／69%），即特異度並未明顯優於 Light；仍需外部驗證，不可用研究結果覆蓋 Light 分類。</small></details>
 </section>
 <section class="panel step-panel" data-panel="2" hidden><div class="panel-heading"><span class="step-number">03</span><div><h2>處理結果不一致的情境</h2><p>假性滲出液與感染風險分開判讀，可同時存在。</p></div></div>
 <h3>Albumin gradient · 假性滲出液</h3><p class="muted">Light 為滲出液但臨床支持心衰竭／肝性等漏出液病因時使用。</p><div class="fields two" id="albuminLabs"></div><div id="gradientResult"></div>
@@ -163,7 +163,7 @@ const clues=[['fever','發燒／持續感染徵象'],['loculated','影像分隔�
 const sourceData=[
 ['BTS Guideline for pleural disease · 2023','https://www.brit-thoracic.org.uk/document-library/guidelines/pleural-disease/bts-guideline-for-pleural-disease/','正式指引：感染分層、病因檢查與 NT-proBNP。'],
 ['ICS / NCCP Pleural effusion guidelines · 2024','https://pmc.ncbi.nlm.nih.gov/articles/PMC11093145/','正式指引：Light 分類、albumin／protein gradient 與診斷流程。'],
-['Porcel et al. Revisiting Light’s criteria · 2026','https://pmc.ncbi.nlm.nih.gov/articles/PMC12991015/','診斷研究：7,280 例，血液檢體以外的 triple combination。'],
+['Porcel et al. Revisiting Light’s criteria · ERJ Open Res 2026;12(2):00821-2025','https://pmc.ncbi.nlm.nih.gov/articles/PMC12991015/','診斷研究：7,280 例，只用胸水的 triple combination；驗證組敏感度 98%、特異度 70%。'],
 ['Bielsa et al. Cardiac and hepatic false exudates · 2012','https://doi.org/10.1111/j.1440-1843.2012.02155.x','原始研究：假性滲出液梯度。'],
 ['PD-related hydrothorax: single-center experience · 2021','https://pmc.ncbi.nlm.nih.gov/articles/PMC8722551/','病例系列：胸腹膜交通的診斷線索與影像。'],
 ['Porcel et al. BANCA score · 2025','https://pmc.ncbi.nlm.nih.gov/articles/PMC12208600/','診斷研究：心因性胸水；NT-proBNP 門檻受族群影響，本頁不計算 BANCA。']
